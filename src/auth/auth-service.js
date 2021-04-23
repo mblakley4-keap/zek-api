@@ -1,9 +1,13 @@
 const db_mock = require('../../mock/db-mock');
+const axios = require('axios');
 const logger = require('../utils/logger');
+
+const { AUTH_REQUEST_URL, DEV_API_KEY, ZEK_API_URL } = process.env;
 
 const AuthService = {
     validateLoginCreds(loginCreds) {
         const { userName, password } = loginCreds;
+        
         const validationObject = {
             foundUser: false,
             correctPassword: false,
@@ -13,20 +17,34 @@ const AuthService = {
         const getUser = db_mock.users.find(x => userName === x.userName);
         
         if(!getUser) {
-            return validationObject.error = "User not found";
+            validationObject.error = "User not found";
+            return validationObject;
         }
 
         validationObject.foundUser = true;
         logger.debug(`Auth Service found user: ${userName}`);
 
         if(getUser.password !== password) {
-            return validationObject.error = `Incorrect password for user: ${userName}`;
+            validationObject.error = `Incorrect password for user: ${userName}`;
+            return validationObject;
         }
 
         validationObject.correctPassword = true;
         logger.debug(`Auth Service validated password for user: ${userName}`);
 
         return validationObject;
+    },
+
+    authRequest() {
+        axios.get(AUTH_REQUEST_URL, {
+            params: {
+                client_id: DEV_API_KEY,
+                redirect_uri: `${ZEK_API_URL}/api/auth/auth-request`,
+                response_type: 'code',
+                scope: 'full'
+            }
+        })
+        return;
     }
 }
 
