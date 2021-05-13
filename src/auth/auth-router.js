@@ -20,23 +20,16 @@ authRouter
 
         if (!validatedUser.foundUser) {
             logger.info(`Did not find user: ${userName}`);
-            return res.status(404).json({message: validatedUser.error});
+            return res.status(404).json({ message: validatedUser.error });
         }
         if (!validatedUser.correctPassword) {
             logger.info(`Incorrect password for user: ${userName}`);
-            return res.status(400).json({message: validatedUser.error});
+            return res.status(400).json({ message: validatedUser.error });
         }
 
         logger.info(`User login credentials validated for ${userName}`);
         
-        res.status(200).json({message: 'login successful'});
-    })
-
-authRouter
-    .route('/')
-    .get((req, res, next) => {
-        logger.info('making it here');
-        res.send('checking response');
+        res.status(200).json({ message: 'login successful' });
     })
 
 module.exports = authRouter
